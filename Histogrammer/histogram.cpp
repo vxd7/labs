@@ -6,7 +6,7 @@
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////
-// Вспомогательные функции
+// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё
 void AddBar(Histogram &historgam, const char *strName);
 bool AppendBar(Histogram &historgam, const char *strName);
 
@@ -16,12 +16,12 @@ void insertNewElement(Histogram &historgam, char **newNames, const char* strName
 int getMaxElementLen(const Histogram &historgam);
 
 ///////////////////////////////////////////////////////////////////
-// реализация функций из файла histogram.h
+// СЂРµР°Р»РёР·Р°С†РёСЏ С„СѓРЅРєС†РёР№ РёР· С„Р°Р№Р»Р° histogram.h
 
 
 //-----------------------------------------------------------------
-// Функция AddBlock увеличивает значение столбца strName гистограмы historgam на 1.
-// Если столбца с таким именем не существует, он создается.
+// Р¤СѓРЅРєС†РёСЏ AddBlock СѓРІРµР»РёС‡РёРІР°РµС‚ Р·РЅР°С‡РµРЅРёРµ СЃС‚РѕР»Р±С†Р° strName РіРёСЃС‚РѕРіСЂР°РјС‹ historgam РЅР° 1.
+// Р•СЃР»Рё СЃС‚РѕР»Р±С†Р° СЃ С‚Р°РєРёРј РёРјРµРЅРµРј РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚, РѕРЅ СЃРѕР·РґР°РµС‚СЃСЏ.
 void AddBlock(Histogram &historgam, const char *strName){
 	if(!AppendBar(historgam, strName)){
 		AddBar(historgam, strName);
@@ -29,7 +29,7 @@ void AddBlock(Histogram &historgam, const char *strName){
 }
 
 //-----------------------------------------------------------------
-// Функция PrintHistogram выводит гистограму на экран.
+// Р¤СѓРЅРєС†РёСЏ PrintHistogram РІС‹РІРѕРґРёС‚ РіРёСЃС‚РѕРіСЂР°РјСѓ РЅР° СЌРєСЂР°РЅ.
 void PrintHistogram(const Histogram &historgam){
 	int tmax = getMaxElementLen(historgam);
 
@@ -48,7 +48,7 @@ void PrintHistogram(const Histogram &historgam){
 }
 
 //-----------------------------------------------------------------
-// Функция находит наидлиннейшее название в гистограмме.
+// Р¤СѓРЅРєС†РёСЏ РЅР°С…РѕРґРёС‚ РЅР°РёРґР»РёРЅРЅРµР№С€РµРµ РЅР°Р·РІР°РЅРёРµ РІ РіРёСЃС‚РѕРіСЂР°РјРјРµ.
 int getMaxElementLen(const Histogram &historgam){
 	int tmax = strlen(historgam.BarNames[0]);
 
@@ -64,10 +64,10 @@ int getMaxElementLen(const Histogram &historgam){
 }
 
 ///////////////////////////////////////////////////////////////////
-// реализация вспомогательных функций
+// СЂРµР°Р»РёР·Р°С†РёСЏ РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… С„СѓРЅРєС†РёР№
 
 //-----------------------------------------------------------------
-// Функция AppendBar увеличивает значение столбца strName гистограмы historgam на 1.
+// Р¤СѓРЅРєС†РёСЏ AppendBar СѓРІРµР»РёС‡РёРІР°РµС‚ Р·РЅР°С‡РµРЅРёРµ СЃС‚РѕР»Р±С†Р° strName РіРёСЃС‚РѕРіСЂР°РјС‹ historgam РЅР° 1.
 bool AppendBar(Histogram &historgam, const char *strName){
 	for(int i=0; i<historgam.nBarsSize; i++){
 		if(strcmp(historgam.BarNames[i], strName)==0){
@@ -78,7 +78,7 @@ bool AppendBar(Histogram &historgam, const char *strName){
 	return false;
 }
 
-// Функция AddBar создает в гистограме historgam новый столбец с именем strName.
+// Р¤СѓРЅРєС†РёСЏ AddBar СЃРѕР·РґР°РµС‚ РІ РіРёСЃС‚РѕРіСЂР°РјРµ historgam РЅРѕРІС‹Р№ СЃС‚РѕР»Р±РµС† СЃ РёРјРµРЅРµРј strName.
 //-----------------------------------------------------------------
 void AddBar(Histogram &historgam, const char *strName){
 	char **newNames = new char *[historgam.nBarsSize+1];
@@ -109,8 +109,8 @@ void AddBar(Histogram &historgam, const char *strName){
 	historgam.Bars = newBars;
 }
 
-// Найти место для нового элемента, сравнивая данный элемент
-// лексикографически с остальными
+// РќР°Р№С‚Рё РјРµСЃС‚Рѕ РґР»СЏ РЅРѕРІРѕРіРѕ СЌР»РµРјРµРЅС‚Р°, СЃСЂР°РІРЅРёРІР°СЏ РґР°РЅРЅС‹Р№ СЌР»РµРјРµРЅС‚
+// Р»РµРєСЃРёРєРѕРіСЂР°С„РёС‡РµСЃРєРё СЃ РѕСЃС‚Р°Р»СЊРЅС‹РјРё
 //-----------------------------------------------------------------
 int getLexIndex(Histogram &historgam, const char *strName){
 	int ans = -1;
@@ -138,8 +138,8 @@ int getLexIndex(Histogram &historgam, const char *strName){
 	return ans;
 }
 
-// Данная функция вставляет новый элемент в требуемое место, 
-// формируя новый массив элементов
+// Р”Р°РЅРЅР°СЏ С„СѓРЅРєС†РёСЏ РІСЃС‚Р°РІР»СЏРµС‚ РЅРѕРІС‹Р№ СЌР»РµРјРµРЅС‚ РІ С‚СЂРµР±СѓРµРјРѕРµ РјРµСЃС‚Рѕ, 
+// С„РѕСЂРјРёСЂСѓСЏ РЅРѕРІС‹Р№ РјР°СЃСЃРёРІ СЌР»РµРјРµРЅС‚РѕРІ
 //-----------------------------------------------------------------
 void insertNewElement(Histogram &historgam, char **newNames, const char* strName, int *newBars, int index){
 	int arrSize = historgam.nBarsSize;
