@@ -1,6 +1,6 @@
 #pragma once
 
-//Структура для описания гисторгаммы
+//РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ РѕРїРёСЃР°РЅРёСЏ РіРёСЃС‚РѕСЂРіР°РјРјС‹
 typedef struct{
 	char **BarNames;
 	int *Bars;
@@ -11,7 +11,7 @@ typedef struct{
 } Histogram;
 
 
-//Функции для работы с гисторгаммой
+//Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РіРёСЃС‚РѕСЂРіР°РјРјРѕР№
 void inline InitHistogram(Histogram &historgam);
 void inline DestroyHistogram(Histogram &historgam);
 void PrintHistogram(const Histogram &historgam);
