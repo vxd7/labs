@@ -7,7 +7,13 @@
 
 class spoint {
 public:
-	double x, y;
+	spoint(double newx, double newy, double newz);
+
+	double x, y, z;
+
+	void operator=(spoint &ptn1);
+	myvector getVectorForm();
+	
 };
 
 class shape {
@@ -31,7 +37,7 @@ public:
 	sphere();
 	~sphere();
 
-	void mkShape(spoint center, double rad);
+	void mkShape(spoint center, double radius);
 	void moveShape(myvector moveVector);
 	void rotateShape();
 private:
@@ -74,7 +80,6 @@ public:
 	void moveShape(myvector moveVector);
 	void rotateShape();
 private:
-	spoint ptCenter;
 };
 
 class cuboid : public parallelepiped { /*< Just a simple rectangular box */
@@ -86,5 +91,4 @@ public:
 	void moveShape(myvector moveVector);
 	void rotateShape();
 private:
-	spoint ptCenter;
 };
