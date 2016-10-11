@@ -4,4 +4,7 @@
  * ----- Sphere -----
  */
 
-
+void sphere::mkShape(spoint center)
+{
+	
+}

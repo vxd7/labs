@@ -16,7 +16,7 @@ public:
 	~shape();
 
 	virtual void mkShape() = 0; /*< Pure virtual function -- makes an abstract class */
-	virtual void moveShape() = 0;
+	virtual void moveShape(myvector moveVector) = 0;
 	virtual void rotateShape() = 0;
 
 private:
@@ -31,8 +31,8 @@ public:
 	sphere();
 	~sphere();
 
-	void mkShape();
-	void moveShape();
+	void mkShape(spoint center, double rad);
+	void moveShape(myvector moveVector);
 	void rotateShape();
 private:
 	spoint ptCenter;
@@ -44,8 +44,8 @@ public:
 	pyramid();
 	~pyramid();
 
-	void mkShape();
-	void moveShape();
+	void mkShape(spoint top, std::vector <spoint> basePts);
+	void moveShape(myvector moveVector);
 	void rotateShape();
 private:
 	spoint ptTop; /*<Top of the pyramid */
@@ -57,8 +57,8 @@ public:
 	parallelepiped();
 	~parallelepiped();
 
-	void mkShape();
-	void moveShape();
+	void mkShape(std::vector <spoint> vertices);
+	void moveShape(myvector moveVector);
 	void rotateShape();
 protected:
 	std::vector <spoint> ptVectices;
@@ -70,8 +70,8 @@ public:
 	cube();
 	~cube();
 
-	void mkShape();
-	void moveShape();
+	void mkShape(std::vector <spoint> vertices);
+	void moveShape(myvector moveVector);
 	void rotateShape();
 private:
 	spoint ptCenter;
@@ -82,8 +82,8 @@ public:
 	cuboid();
 	~cuboid();
 
-	void mkShape();
-	void moveShape();
+	void mkShape(std::vector <spoint> vertices);
+	void moveShape(myvector moveVector);
 	void rotateShape();
 private:
 	spoint ptCenter;
