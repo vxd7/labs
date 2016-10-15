@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "geomVector.h"
+#include "myMatrix.h"
 
 class spoint {
 public:
@@ -12,7 +13,8 @@ public:
 	double x, y, z;
 
 	void operator=(spoint &ptn1);
-	myvector getVectorForm();
+	myvector getRadiusVector();
+	void fromVector(myvector vec);
 	
 };
 
@@ -23,7 +25,7 @@ public:
 
 	virtual void mkShape() = 0; /*< Pure virtual function -- makes an abstract class */
 	virtual void moveShape(myvector moveVector) = 0;
-	virtual void rotateShape() = 0;
+	virtual void rotateShape(double xrot, double yrot, double zrot) = 0;
 
 private:
 protected:
@@ -37,9 +39,10 @@ public:
 	sphere();
 	~sphere();
 
+	void mkShape();
 	void mkShape(spoint center, double radius);
 	void moveShape(myvector moveVector);
-	void rotateShape();
+	void rotateShape(double xrot, double yrot, double zrot);
 private:
 	spoint ptCenter;
 	double rad;
@@ -50,9 +53,10 @@ public:
 	pyramid();
 	~pyramid();
 
+	void mkShape();
 	void mkShape(spoint top, std::vector <spoint> basePts);
 	void moveShape(myvector moveVector);
-	void rotateShape();
+	void rotateShape(double xrot, double yrot, double zrot);
 private:
 	spoint ptTop; /*<Top of the pyramid */
 	std::vector <spoint> basespoints;
@@ -63,9 +67,10 @@ public:
 	parallelepiped();
 	~parallelepiped();
 
+	void mkShape();
 	void mkShape(std::vector <spoint> vertices);
 	void moveShape(myvector moveVector);
-	void rotateShape();
+	void rotateShape(double xrot, double yrot, double zrot);
 protected:
 	std::vector <spoint> ptVectices;
 	spoint ptCenter;
@@ -76,9 +81,10 @@ public:
 	cube();
 	~cube();
 
+	void mkShape();
 	void mkShape(std::vector <spoint> vertices);
 	void moveShape(myvector moveVector);
-	void rotateShape();
+	void rotateShape(double xrot, double yrot, double zrot);
 private:
 };
 
@@ -87,8 +93,9 @@ public:
 	cuboid();
 	~cuboid();
 
+	void mkShape();
 	void mkShape(std::vector <spoint> vertices);
 	void moveShape(myvector moveVector);
-	void rotateShape();
+	void rotateShape(double xrot, double yrot, double zrot);
 private:
 };
