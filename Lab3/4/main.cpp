@@ -86,9 +86,9 @@ public:
 	double scProd(const myvector& vec); /**< Scalar product */
 	void crProd(const myvector& vec); /**< Cross product */
 
-	myvector& operator+(const myvector& vec);
-	myvector& operator-(const myvector& vec);
-	myvector& operator*(const double num);
+	myvector operator+(const myvector& vec);
+	myvector operator-(const myvector& vec);
+	myvector operator*(const double num);
 
 	friend std::ostream& operator<<(std::ostream& os, const myvector& vec);
 	myvector();
@@ -163,7 +163,7 @@ void myvector::crProd(const myvector& vec) /**< Cross product */
 
 }
 
-myvector& myvector::operator+(const myvector& vec)
+myvector myvector::operator+(const myvector& vec)
 {
 	double origx, origy, origz;
 	double newx, newy, newz;
@@ -181,12 +181,13 @@ myvector& myvector::operator+(const myvector& vec)
 	resy = origy + newy;
 	resz = origz + newz;
 
-	vectorCoords.setxyz(resx, resy, resz);
-	calculateSize(); /* Renew the size of the vector */
+	myvector res(resx, resy, resz);
+	res.calculateSize();
 
-	return *this;
+	return res;
+
 }
-myvector& myvector::operator-(const myvector& vec)
+myvector myvector::operator-(const myvector& vec)
 {
 	double origx, origy, origz;
 	double newx, newy, newz;
@@ -204,12 +205,12 @@ myvector& myvector::operator-(const myvector& vec)
 	resy = origy - newy;
 	resz = origz - newz;
 
-	vectorCoords.setxyz(resx, resy, resz);
-	calculateSize(); /* Renew the size of the vector */
-	
-	return *this;
+	myvector res(resx, resy, resz);
+	res.calculateSize();
+
+	return res;
 }
-myvector& myvector::operator*(const double num)
+myvector myvector::operator*(const double num)
 {
 	double origx, origy, origz;
 
@@ -222,11 +223,11 @@ myvector& myvector::operator*(const double num)
 	resx = origx * num;
 	resy = origy * num;
 	resz = origz * num;
-	
-	vectorCoords.setxyz(resx, resy, resz);
-	calculateSize(); /* Renew the size of the vector */
 
-	return *this;
+	myvector res(resx, resy, resz);
+	res.calculateSize();
+
+	return res;
 }
 
 myvector::myvector()
@@ -298,9 +299,13 @@ int main()
 
 	std::cout << vec1 << vec2;
 
-	std::cout <<"(" << vec1.getVectorName() << ", " << vec2.getVectorName() << ") = " << vec1.scProd(vec2) << std::endl;
-	vec1.crProd(vec2);
-	std::cout << "[" << vec1.getVectorName() << ", " << vec2.getVectorName() << "] = " << vec1;
+	//std::cout <<"(" << vec1.getVectorName() << ", " << vec2.getVectorName() << ") = " << vec1.scProd(vec2) << std::endl;
+	//vec1.crProd(vec2);
+	//std::cout << "[" << vec1.getVectorName() << ", " << vec2.getVectorName() << "] = " << vec1;
+
+	myvector vec3 = vec1 + vec2;
+	vec3.setVectorName("VEC#3");
+	std::cout << vec1 << vec2 << vec3;
 
 	return 0;
 }
