@@ -19,7 +19,7 @@ void myMatrix::makeMatrix(std::vector <std::vector<double>> newMatrixDef)
 }
 void myMatrix::makeRotMatrix(std::string rotAxes, double angle)
 {
-	angle *= 180.0/M_PI;
+	angle *= M_PI/180.0; //Convert to radians
 
 	if(matrix.size() == 0) {
 		matrix.resize(3);
@@ -132,5 +132,3 @@ myMatrix myMatrix::operator* (myMatrix& matrixClass1)
 
 	return resMatrixClass;
 }
-
-
