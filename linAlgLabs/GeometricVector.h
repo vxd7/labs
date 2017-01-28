@@ -19,14 +19,14 @@ namespace vectorAlgebra {
 	/*
 	 * Vector products
 	 */
-	double scalarProduct(const GeometricVector& vector1, const GeometricVector& vector2); // Скалярное произведение
-	GeometricVector crossProduct(const GeometricVector& vector1, const GeometricVector& vector2); // Векторное произведение
-	double tripleProduct(const GeometricVector& vector1, const GeometricVector& vector2, const GeometricVector& vector3); // Смешанное произведение
+	double scalarProduct(GeometricVector& vector1, GeometricVector& vector2); // Скалярное произведение
+	GeometricVector crossProduct( GeometricVector& vector1,  GeometricVector& vector2); // Векторное произведение
+	double tripleProduct( GeometricVector& vector1,  GeometricVector& vector2,  GeometricVector& vector3); // Смешанное произведение
 
 	/*
 	 * Misc functions
 	 */
-	double angleBetweenVectors(const GeometricVector& vector1, const GeometricVector& vector2);
+	double angleBetweenVectors( GeometricVector& vector1,  GeometricVector& vector2);
 	double distPointPlane(GeometricPoint point, GeometricPlane plane);
 	double dist2Lines(GeometricLine line1, GeometricLine line2);
 }
@@ -48,9 +48,15 @@ public:
 	//GeometricPoint(const int newDimensionCount, const std::vector<double>& newPointCoords, const std::string& pointName);
 	GeometricPoint(const double newx, const double newy, const double newz, const std::string& pointName);
 
-	void setAllComponents(const double newx, const double newy, const double newz);
 	double getComponent(const componentName& compName) const;
+	std::string getPointName();
+
+	void setAllComponents(const double newx, const double newy, const double newz);
 	void setComponent(const componentName& compName, const double newComponent);
+	double getx() const;
+	double gety() const;
+	double getz() const;
+	
 };
 
 /********************
@@ -63,13 +69,14 @@ private:
 
 public:
 	GeometricVector();
+	GeometricVector(const double x, const double y, const double z);
 	GeometricVector(const double x, const double y, const double z, const std::string& vectorName);
 
 	double getVectorSize() const;
 	GeometricPoint getVectorCoords() const;
 	std::string getVectorName() const;
 
-	void setVectorCoords(const GeometricPoint& vectorCoords);
+	void setVectorCoords(const GeometricPoint& newVectorCoords);
 	void setVectorName(const std::string& newName);
 
 	GeometricVector operator+(const GeometricVector& vec);
@@ -77,6 +84,10 @@ public:
 	GeometricVector operator*(const double num);
 
 	friend std::ostream& operator<<(std::ostream& os, const GeometricVector& vec);
+
+	double getComponentX() const;
+	double getComponentY() const;
+	double getComponentZ() const;
 
 };
 
@@ -91,9 +102,10 @@ private:
 	GeometricVector directingVector;
 public:
 	GeometricLine();
-	GeometricLine(const GeometricPoint& point, const GeometricVector& vec, const std::string& lineName);
+	GeometricLine(const GeometricPoint& newPoint, const GeometricVector& dVector, const std::string& lineName);
 
-	std::string getLineName;
+	
+	std::string& getLineName();
 	
 };
 
@@ -107,9 +119,13 @@ private:
 	GeometricPoint point;
 	GeometricVector normal;
 
-	std::vector<double> planeEquationCoefficients;
+	double D; //Plane coeff.
 public:
 	GeometricPlane();
-	GeometricPlane(const GeometricPoint& point, const GeometricVector& normal, const std::string& planeName);
+	GeometricPlane(const GeometricPoint& newPoint, const GeometricVector& newNormal, const std::string& planeName);
+
+
+	double getCoefficientD();
+	GeometricVector& getNormal() const;
 	
 };
