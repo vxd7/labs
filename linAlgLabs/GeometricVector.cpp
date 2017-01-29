@@ -35,12 +35,12 @@ GeometricVector vectorAlgebra::crossProduct(GeometricVector& vector1, GeometricV
 
 	resx = vec1Y * vec2Z - vec2Y * vec1Z;
 	resy = (-1) * (vec1X * vec2Z  - vec2X * vec1Z);
-	resz = vec1X * vec2Y - vec1Y * vec1X;
+	resz = vec1X * vec2Y - vec1Y * vec2X;
 
 	GeometricVector resVector(resx, resy, resz);
 
 	if(!vector1.getVectorName().empty() && !vector2.getVectorName().empty()) {
-		resVector.setVectorName("Product of " + vector1.getVectorName() + " and " + vector2.getVectorName());
+		resVector.setVectorName("Cross product of " + vector1.getVectorName() + " and " + vector2.getVectorName());
 	}
 
 	return resVector;
@@ -304,6 +304,6 @@ double GeometricPlane::getCoefficientD() {
 	return D;
 }
 
-GeometricVector& GeometricPlane::getNormal() const {
+GeometricVector& GeometricPlane::getNormal() {
 	return normal;
 }
