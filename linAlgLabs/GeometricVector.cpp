@@ -6,7 +6,7 @@
 #include <map>
 #include <cmath>
 
-double vectorAlgebra::scalarProduct(GeometricVector& vector1, GeometricVector& vector2) {
+double vectorAlgebra::scalarProduct(const GeometricVector& vector1, const GeometricVector& vector2) {
 	double vec1X, vec1Y, vec1Z;
 	double vec2X, vec2Y, vec2Z;
 
@@ -20,7 +20,7 @@ double vectorAlgebra::scalarProduct(GeometricVector& vector1, GeometricVector& v
 
 	return (vec1X * vec2X + vec1Y * vec2Y + vec1Z * vec2Z);
 }
-GeometricVector vectorAlgebra::crossProduct(GeometricVector& vector1, GeometricVector& vector2) {
+GeometricVector vectorAlgebra::crossProduct(const GeometricVector& vector1, const GeometricVector& vector2) {
 	double vec1X, vec1Y, vec1Z;
 	double vec2X, vec2Y, vec2Z;
 	double resx, resy, resz;
@@ -46,17 +46,18 @@ GeometricVector vectorAlgebra::crossProduct(GeometricVector& vector1, GeometricV
 	return resVector;
 	
 }
-double vectorAlgebra::tripleProduct( GeometricVector& vector1,  GeometricVector& vector2,  GeometricVector& vector3) {
+double vectorAlgebra::tripleProduct(const GeometricVector& vector1, const GeometricVector& vector2, const GeometricVector& vector3) {
 	GeometricVector crProd = vectorAlgebra::crossProduct(vector2, vector3);
 	double result = vectorAlgebra::scalarProduct(vector1, crProd);
 	return result;
 }
 
-double vectorAlgebra::angleBetweenVectors( GeometricVector& vector1,  GeometricVector& vector2) {
+double vectorAlgebra::angleBetweenVectors(const GeometricVector& vector1, const GeometricVector& vector2) {
 	double temp = vectorAlgebra::scalarProduct(vector1, vector2)/(vector1.getVectorSize() * vector2.getVectorSize());
 	return std::acos(temp);
 }
-double vectorAlgebra::distPointPlane(GeometricPoint point, GeometricPlane plane) {
+
+double vectorAlgebra::distPointPlane(const GeometricPoint& point, const GeometricPlane& plane) {
 	double ptX, ptY, ptZ;
 	ptX = point.getx();
 	ptY = point.gety();
@@ -68,7 +69,7 @@ double vectorAlgebra::distPointPlane(GeometricPoint point, GeometricPlane plane)
 	return std::fabs(res);
 	
 }
-double vectorAlgebra::dist2Lines(GeometricLine line1, GeometricLine line2) {
+double vectorAlgebra::dist2Lines(const GeometricLine& line1, const GeometricLine& line2) {
 	
 }
 
@@ -115,7 +116,7 @@ void GeometricPoint::setComponent(const componentName& compName, const double ne
 	pointCoords[compName] = newComponent;
 }
 
-std::string GeometricPoint::getPointName() {
+std::string GeometricPoint::getPointName() const {
 	return name;
 }
 
@@ -134,6 +135,14 @@ GeometricVector::GeometricVector() {
 	name = "";
 }
 
+GeometricVector::GeometricVector(const GeometricPoint& pt) {
+	vectorCoords = pt;
+	if(!pt.getPointName().empty()) {
+		name = pt.getPointName();
+	} else {
+		name = "";
+	}
+}
 GeometricVector::GeometricVector(const double x, const double y, const double z) {
 	vectorCoords.setAllComponents(x, y, z);
 }
@@ -278,6 +287,12 @@ GeometricLine::GeometricLine(const GeometricPoint& newPoint, const GeometricVect
 
 	name = lineName;
 }
+
+std::string GeometricLine::getLineName() const {
+	return name;
+}
+
+// GEOMETRIC PLANE
 GeometricPlane::GeometricPlane() {
 	name = "";
 }
@@ -300,10 +315,10 @@ GeometricPlane::GeometricPlane(const GeometricPoint& newPoint, const GeometricVe
 	D = (-1) * (A * x0 + B * y0 + C * z0);
 }
 
-double GeometricPlane::getCoefficientD() {
+double GeometricPlane::getCoefficientD() const {
 	return D;
 }
 
-GeometricVector& GeometricPlane::getNormal() {
+GeometricVector GeometricPlane::getNormal() const {
 	return normal;
 }
