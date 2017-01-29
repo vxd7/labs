@@ -69,7 +69,35 @@ double vectorAlgebra::distPointPlane(const GeometricPoint& point, const Geometri
 	return std::fabs(res);
 	
 }
+
 double vectorAlgebra::dist2Lines(const GeometricLine& line1, const GeometricLine& line2) {
+	GeometricVector pl1(line1.getPoint()); // Make radius vector from point
+	GeometricVector pl2(line2.getPoint());
+
+	/* Construct a parallelepiped on vectors (pl2 - pl1), s1, s2,
+	 * where s1 -- directing vector of line 1
+	 * s2 -- --//--
+	 */
+	double parallelepiped = vectorAlgebra::tripleProduct((pl2 - pl1), line1.getDirectingVector(), line2.getDirectingVector());
+	GeometricVector parallelogram = vectorAlgebra::crossProduct(line1.getDirectingVector(), line2.getDirectingVector());
+
+	double ans = parallelepiped/(parallelogram.getVectorSize());
+
+	return std::fabs(ans);
+
+}
+
+bool vectorAlgebra::vec3Complanary(const GeometricVector& vec1, const GeometricVector& vec2, const GeometricVector& vec3) {
+	GeometricVector zeroVec(0.0, 0.0, 0.0);
+	if((vec1 == zeroVec) || (vec2 == zeroVec) || (vec3 == zeroVec)) {
+		return true; // Complanary
+	}
+
+	if(tripleProduct(vec1, vec2, vec3) == 0.0) {
+		return true;
+	} else {
+		return false;
+	}
 	
 }
 
@@ -95,6 +123,8 @@ GeometricPoint::GeometricPoint() {
 // }
 
 GeometricPoint::GeometricPoint(const double newx, const double newy, const double newz, const std::string& pointName) {
+	pointCoords.resize(DEFAULT_DIM);
+
 	pointCoords[X_COMP] = newx;
 	pointCoords[Y_COMP] = newy;
 	pointCoords[Z_COMP] = newz;
@@ -243,6 +273,24 @@ GeometricVector GeometricVector::operator*(const double num) {
 	return res;
 }
 
+bool operator==(const GeometricVector& vector1, const GeometricVector& vector2) {
+	double vec1X, vec1Y, vec1Z;
+	double vec2X, vec2Y, vec2Z;
+
+	vec1X = vector1.getComponentX();
+	vec1Y = vector1.getComponentY();
+	vec1Z = vector1.getComponentZ();
+
+	vec2X = vector2.getComponentX();
+	vec2Y = vector2.getComponentY();
+	vec2Z = vector2.getComponentZ();
+
+	if((vec1X == vec2X) && (vec1Y == vec2Y) && (vec1Z == vec2Z)) {
+		return true;
+	} else {
+		return false;
+	}
+}
 std::ostream& operator<<(std::ostream& os, const GeometricVector& vec) {
 	double origx, origy, origz;
 	origx = vec.vectorCoords.getx();
@@ -288,6 +336,15 @@ GeometricLine::GeometricLine(const GeometricPoint& newPoint, const GeometricVect
 	name = lineName;
 }
 
+GeometricPoint GeometricLine::getPoint() const {
+	return point;
+}
+
+GeometricVector GeometricLine::getDirectingVector() const {
+	return directingVector;
+	
+}
+
 std::string GeometricLine::getLineName() const {
 	return name;
 }
@@ -317,6 +374,10 @@ GeometricPlane::GeometricPlane(const GeometricPoint& newPoint, const GeometricVe
 
 double GeometricPlane::getCoefficientD() const {
 	return D;
+}
+
+GeometricPoint GeometricPlane::getPoint() const {
+	return point;
 }
 
 GeometricVector GeometricPlane::getNormal() const {

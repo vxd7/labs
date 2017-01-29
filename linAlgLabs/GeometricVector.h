@@ -29,6 +29,8 @@ namespace vectorAlgebra {
 	double angleBetweenVectors(const GeometricVector& vector1, const GeometricVector& vector2);
 	double distPointPlane(const GeometricPoint& point, const GeometricPlane& plane);
 	double dist2Lines(const GeometricLine& line1, const GeometricLine& line2);
+
+	bool vec3Complanary(const GeometricVector& vec1, const GeometricVector& vec2, const GeometricVector& vec3);
 }
 
 /*******************
@@ -84,6 +86,7 @@ public:
 	GeometricVector operator-(const GeometricVector& vec);
 	GeometricVector operator*(const double num);
 
+	friend bool operator==(const GeometricVector& vec1, const GeometricVector& vec2);
 	friend std::ostream& operator<<(std::ostream& os, const GeometricVector& vec);
 
 	double getComponentX() const;
@@ -105,6 +108,8 @@ public:
 	GeometricLine();
 	GeometricLine(const GeometricPoint& newPoint, const GeometricVector& dVector, const std::string& lineName);
 	
+	GeometricPoint getPoint() const;
+	GeometricVector getDirectingVector() const;
 	std::string getLineName() const;
 	
 };
@@ -126,6 +131,7 @@ public:
 
 
 	double getCoefficientD() const;
+	GeometricPoint getPoint() const;
 	GeometricVector getNormal() const; 
 	
 };
