@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include <vector>;
+#include <vector>
 
 class VectorZp;
 
@@ -19,8 +19,9 @@ namespace modFunc {
 
 	/* Linear dependency checking */
 	std::vector<std::vector<int> > getMatrixFromVectors(const std::vector<VectorZp>& vectors);
-	void swapMetrixRows(const int r1, const int r2, std::vector<std::vector<int> >& matrix);
-	void swapMetrixCols(const int c1, const int c2, std::vector<std::vector<int> >& matrix);
+	void swapMatrixRows(const int r1, const int r2, std::vector<std::vector<int> >& matrix);
+	void swapMatrixCols(const int c1, const int c2, std::vector<std::vector<int> >& matrix);
+	void makeColBelowZero(const int base_elem, std::vector<std::vector<int> >& mtr, const int p);
 	bool isLinDep(const std::vector<VectorZp>& vectors);
 }
 

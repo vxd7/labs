@@ -225,7 +225,7 @@ std::vector<std::vector<int> > modFunc::getMatrixFromVectors(const std::vector<V
 	return resMatrix;
 	
 }
-void modFunc::swapMetrixRows(const int r1, const int r2, std::vector<std::vector<int> >& matrix) {
+void modFunc::swapMatrixRows(const int r1, const int r2, std::vector<std::vector<int> >& matrix) {
 	if((r1 > matrix.size()) || (r2 > matrix.size())) {
 		return;
 	}
@@ -235,7 +235,7 @@ void modFunc::swapMetrixRows(const int r1, const int r2, std::vector<std::vector
 	matrix[r2] = tmp;
 }
 
-void modFunc::swapMetrixCols(const int c1, const int c2, std::vector<std::vector<int> >& matrix) {
+void modFunc::swapMatrixCols(const int c1, const int c2, std::vector<std::vector<int> >& matrix) {
 	if((c1 > (*(matrix.begin())).size()) || c2 > (*(matrix.begin())).size()) {
 		return;
 	}
@@ -248,8 +248,86 @@ void modFunc::swapMetrixCols(const int c1, const int c2, std::vector<std::vector
 	
 }
 
+void modFunc::makeColBelowZero(const int base_elem, std::vector<std::vector<int> >& mtr, const int p) {
+	//col down
+	for(int i = 0; i < mtr.size(); ++i) {
+		if(i == base_elem) {
+			continue;
+		}
+		int mult = modFunc::modularMultiply(mtr[i][base_elem], modFunc::inverseNumber(mtr[base_elem][base_elem], p), p);
+
+		for(int j = 0; j < mtr[i].size(); ++j) {
+			mtr[i][j] = modFunc::modularAdd(mtr[i][j], (-1) * modFunc::modularMultiply(mtr[base_elem][base_elem], mult, p), p);
+		}
+
+	}
+	
+}
+
+void printMtr(std::vector<std::vector<int> >& mtr) {
+	for(int i = 0; i < mtr.size(); ++i) {
+		for(int j = 0; j < mtr[i].size(); ++j) {
+			std::cout << mtr[i][j] << ' ';
+		}
+		std::cout << std::endl;
+	}
+}
 bool modFunc::isLinDep(const std::vector<VectorZp>& vectors) {
-	std::vector<std::vector<int> > mtr = getMatrixFromVectors(vectors);
+	std::vector<std::vector<int> > mtr = modFunc::getMatrixFromVectors(vectors);
+	int module = vectors[0].getMod();
+
+	for(int i = 0; i < mtr.size(); ++i) {
+		if(mtr[i][i] != 0) {
+			modFunc::makeColBelowZero(i, mtr, module);
+		} else {
+			// if there is a row below with non-zero base elem
+			// swap it with current row (which has zero base-elem)
+			bool swapped = false;
+			for(int j = i + 1; j < mtr.size(); ++j) {
+				if(mtr[j][i] != 0) {
+					modFunc::swapMatrixRows(j, i, mtr);
+					swapped = true;
+					break;
+				}
+			}
+
+			if(!swapped) {
+				modFunc::swapMatrixCols(i, mtr.size() - 1, mtr);
+			}
+
+			i -= 1;
+			
+		}
+	}
+
+	printMtr(mtr);
+	int rank = 0;
+	int minDim;
+	if(mtr.size() < mtr[0].size()) {
+		minDim = mtr.size();
+	} else {
+		minDim = mtr[0].size();
+	}
+	for(int i = 0; i < minDim; ++i) {
+		if(mtr[i][i] != 0) {
+			bool everythingZeroe = true;
+			for(int j = i + 1; j < mtr.size(); ++j) {
+				if(mtr[j][i] != 0) {
+					everythingZeroe = false;
+					break;
+				}
+			}
+			if(everythingZeroe) {
+				rank++;
+			}
+		}
+	}
+
+	if(vectors.size() == rank) {
+		return true;
+	} else {
+		return false;
+	}
 
 	
 }
