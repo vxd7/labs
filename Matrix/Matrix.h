@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 
+#define eps 0.00001
 class InvalidMatrixSize : public std::exception {
 	std::string reason;
 
@@ -18,6 +19,12 @@ public:
 
 	const char* what() const throw() {
 		return reason.c_str();
+	}
+};
+
+class DegenerateMatrix : public std::exception {
+	const char* what() const throw() {
+		return "Cannot invert degenerate(singular) matrix";
 	}
 };
 
@@ -199,57 +206,30 @@ public:
 		}
 	}
 
+	void swapCols(int col1, int col2) {
+		for(int i = 0; i < rows; ++i) {
+			double tmp = mtr[i][col1];
+			mtr[i][col1] = mtr[i][col2];
+			mtr[i][col2] = tmp;
+		}
+	}
+
 	bool isSquare() const {
 		return (rows == cols);
 	}
 
+	void transformPrecision(double epsilon) {
+		for(int i = 0; i < rows; ++i) {
+			for(int j = 0; j < cols; ++j) {
+				if(mtr[i][j] < epsilon) {
+					mtr[i][j] = 0.0;
+				}
+			}
+		}
+	}
+
 	int GaussTransform();
-
-
-	Matrix& getInverseMatrix();
-
-};
-
-class sqMatrix : public Matrix {
-private:
-	/* Restrict user access for there functions */
-	/* because it can break the square shape of the matrix */
-	using Matrix::addRow;
-	using Matrix::addCol;
-
-protected:
-	int GaussRowSwaps = 0; /* Number of rows swapped by Gauss Transform
-						  We need to keep track of it if we don't want to
-						  fail with the sign of the determinant
-						  */
-public:
-	sqMatrix(int dim) : Matrix(dim, dim) {}
-	sqMatrix(const Matrix& bmtr) : Matrix(bmtr) { /* !Very! important place! */
-		if(!bmtr.isSquare()) {
-			throw InvalidMatrixSize("Cannot construct square matrix from non-sqare");
-		}
-	}
-	sqMatrix(int dims, std::vector<std::vector<double>> newMatrix) : Matrix(dims, dims, newMatrix) {
-		if(newMatrix.size() != newMatrix[0].size()) {
-			throw InvalidMatrixSize("Not sqare in constructor");
-		}
-	}
-
-	double getDet() {
-		GaussRowSwaps = GaussTransform();
-
-		double det = mtr[0][0];
-		for(int i = 1; i < rows; ++i) {
-			det *= mtr[i][i];
-		}
-
-		if(GaussRowSwaps % 2 != 0) {
-			det *= (-1.0);
-		}
-
-		return det;
-	}
-
+	Matrix FullGaussTransform();
 };
 
 int Matrix::GaussTransform() {
@@ -291,4 +271,123 @@ int Matrix::GaussTransform() {
 
 	return rowSwaps;
 	
+}
+
+Matrix Matrix::FullGaussTransform() {
+	Matrix res(rows, cols, mtr);
+	for(int i = 0; i < rows ++i) {
+		if(res[i][i] != 0) {
+			for(int j = 0; j < rows; ++j) {
+				if( i != j) {//not diag elem
+					double mul = res[j][i]/res[i][i];
+					for(int k = 0; k < cols; ++k) {
+						res[j][k] -= mul * res[i][k];
+					}
+					
+				}
+			}
+			
+		} else {
+			bool reduce = false;
+			for(int rb = i + 1; rb < rows; ++rb) {
+				if(res[rb][i]) {
+					res.swapRows(i, rb);
+					reduce = false;
+					break;
+				}
+			}
+
+			if(reduce) {
+				res.swapCols(cols, i);
+			}
+			i--;
+		}
+	}
+
+	for(int i = 0; i < rows; ++i) {
+		double mul = 1/res[i][i];
+		for(int j = 0; j < cols; ++j) {
+			res[i][j] *= mul;
+			
+		}
+		if(res[i][i] > eps) {     //EPSILON COMPARISION
+			res[i][i] = 1.0;
+		}
+	}
+
+	return res;
+}
+
+class sqMatrix : public Matrix {
+private:
+	/* Restrict user access for there functions */
+	/* because it can break the square shape of the matrix */
+	using Matrix::addRow;
+	using Matrix::addCol;
+
+protected:
+	int GaussRowSwaps = 0; /* Number of rows swapped by Gauss Transform
+						  We need to keep track of it if we don't want to
+						  fail with the sign of the determinant
+						  */
+public:
+	sqMatrix(int dim) : Matrix(dim, dim) {}
+	sqMatrix(const Matrix& bmtr) : Matrix(bmtr) { /* !Very! important place! */
+		if(!bmtr.isSquare()) {
+			throw InvalidMatrixSize("Cannot construct square matrix from non-sqare");
+		}
+	}
+	sqMatrix(int dims, std::vector<std::vector<double>> newMatrix) : Matrix(dims, dims, newMatrix) {
+		if(newMatrix.size() != newMatrix[0].size()) {
+			throw InvalidMatrixSize("Not sqare in constructor");
+		}
+	}
+
+	double getDet() {
+		GaussRowSwaps = GaussTransform();
+
+		double det = mtr[0][0];
+		for(int i = 1; i < rows; ++i) {
+			det *= mtr[i][i];
+		}
+
+		if(GaussRowSwaps % 2 != 0) {
+			det *= (-1.0);
+		}
+
+		return det;
+	}
+
+	sqMatrix getInverseMatrix();
+
+};
+
+sqMatrix sqMatrix::getInverseMatrix() {
+	sqMatrix old(rows, mtr); //Dirty workaround here -- TODO: rewrite later!
+	if(old.getDet() == 0.0) { //Add EPSILON comparision here 
+		throw DegenerateMatrix();
+	}
+
+	Matrix inversify(rows, rows, mtr); //TODO: optimise
+	for(int i = 0; i < rows; ++i) {
+		std::vector<double> idCol(rows, 0);
+		idCol[i] = 1.0;
+		inversify.addCol(idCol);
+	}
+
+	inversify.FullGaussTransform();
+
+	std::cout << std::endl;
+	inversify.print();
+	std::cout << std::endl;
+
+
+	sqMatrix res(rows);
+	for(int i = 0; i < rows; ++i) {
+		for(int j = 0; j < cols; ++j) {
+			res.at(i, j) = inversify.at(i, cols + j);
+		}
+	}
+
+	return res;
 }
