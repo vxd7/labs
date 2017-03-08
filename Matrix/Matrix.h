@@ -27,6 +27,9 @@ protected:
 	int rows, cols;
 
 public:
+	/* Default constructor */
+	Matrix() {}
+
 	Matrix(int rows, int cols) :
 		rows(rows),
 		cols(cols)
@@ -167,4 +170,50 @@ public:
 		
 	}
 
+	void addRow(std::vector<double> newRow) {
+		if(newRow.size() != mtr[0].size()) {
+			throw InvalidMatrixSize("Invalid row size");
+		}
+
+		mtr.push_back(newRow);
+		rows++;
+	}
+
+	void addCol(std::vector<double> newCol) {
+		if(newCol.size() != mtr.size()) {
+			throw InvalidMatrixSize("Invalid col size");
+		}
+
+		for(int i = 0; i < mtr.size(); ++i) {
+			mtr[i].push_back(newCol[i]);
+		}
+		cols++;
+	}
+
+	bool isSquare() const {
+		return (rows == cols);
+	}
+
 };
+
+class sqMatrix : public Matrix {
+private:
+	/* Restrict user access for there functions */
+	/* because it can break the square shape of the matrix */
+	using Matrix::addRow;
+	using Matrix::addCol;
+public:
+	sqMatrix(int dim) : Matrix(dim, dim) {}
+	sqMatrix(const Matrix& bmtr) : Matrix(bmtr) { /* !Very! important place! */
+		if(!bmtr.isSquare()) {
+			throw InvalidMatrixSize("Cannot construct square matrix from non-sqare");
+		}
+	}
+	sqMatrix(int dims, std::vector<std::vector<double>> newMatrix) : Matrix(dims, dims, newMatrix) {
+		if(newMatrix.size() != newMatrix[0].size()) {
+			throw InvalidMatrixSize("Not sqare in constructor");
+		}
+	}
+
+};
+
