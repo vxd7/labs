@@ -26,6 +26,7 @@ protected:
 	std::vector<std::vector<double>> mtr;
 	int rows, cols;
 
+
 public:
 	/* Default constructor */
 	Matrix() {}
@@ -190,9 +191,22 @@ public:
 		cols++;
 	}
 
+	void swapRows(int row1, int row2) {
+		for(int i = 0; i < cols; ++i) {
+			double tmp = mtr[row1][i];
+			mtr[row1][i] = mtr[row2][i];
+			mtr[row2][i] = tmp;
+		}
+	}
+
 	bool isSquare() const {
 		return (rows == cols);
 	}
+
+	int GaussTransform();
+
+
+	Matrix& getInverseMatrix();
 
 };
 
@@ -202,6 +216,12 @@ private:
 	/* because it can break the square shape of the matrix */
 	using Matrix::addRow;
 	using Matrix::addCol;
+
+protected:
+	int GaussRowSwaps = 0; /* Number of rows swapped by Gauss Transform
+						  We need to keep track of it if we don't want to
+						  fail with the sign of the determinant
+						  */
 public:
 	sqMatrix(int dim) : Matrix(dim, dim) {}
 	sqMatrix(const Matrix& bmtr) : Matrix(bmtr) { /* !Very! important place! */
@@ -215,5 +235,60 @@ public:
 		}
 	}
 
+	double getDet() {
+		GaussRowSwaps = GaussTransform();
+
+		double det = mtr[0][0];
+		for(int i = 1; i < rows; ++i) {
+			det *= mtr[i][i];
+		}
+
+		if(GaussRowSwaps % 2 != 0) {
+			det *= (-1.0);
+		}
+
+		return det;
+	}
+
 };
 
+int Matrix::GaussTransform() {
+	int rowSwaps = 0;
+	for(int l1 = 0; l1 < rows - 1; ++l1) {
+		int maxN = l1;
+		double maxValue = mtr[l1][l1];
+
+		for(int l2 = l1 + 1; l2 < rows; ++l2) {
+			if(mtr[l2][l2] > maxValue) {
+				maxN = l2;
+				maxValue = mtr[l2][l2];
+			}
+		}
+
+		if(maxN > l1) {
+			//Then swap is needed
+			swapRows(l1, maxN);
+			++rowSwaps;
+		} else {
+			//Swap is NOT needed
+			//But we need to check for zeroe-base-element
+			if(maxValue == 0) {
+				//Some shit happened
+				//throw an exception here
+				std::cout << "Shit happened...";
+			}
+		}
+
+		//Subtract the row with base elem from all subsequent rows
+		for(int l2 = l1 + 1; l2 < rows; ++l2) {
+			double k = mtr[l2][l1]/mtr[l1][l1];
+			mtr[l2][l1] = 0.0; //We need exact zeroe here -- because of double rounding
+			for(int c = l1 + 1; c < cols; ++c) {
+				mtr[l2][c] -= mtr[l1][c] * k;
+			}
+		}
+	}
+
+	return rowSwaps;
+	
+}
