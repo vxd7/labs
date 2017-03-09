@@ -149,7 +149,7 @@ public:
 		for(size_t i = 0; i < rows; ++i) {
 			for(size_t k = 0; k < sec.cols; ++k) {
 				size_t j;
-				int sum = 0;
+				double sum = 0;
 				for(j = 0; j < sec.rows; ++j) {
 					sum += mtr[i][j] * sec.mtr[j][k];
 				}
