@@ -310,6 +310,9 @@ Matrix Matrix::FullGaussTransform() {
 				//Multiply and subtract
 				for(int ix = 0; ix < cols; ++ix) {
 					res[iix][ix] += (-1.0) * lv * res[rix][ix];
+					if(std::fabs(res[iix][ix]) < eps) {
+						res[iix][ix] = 0.0;
+					}
 				}
 				
 			}
