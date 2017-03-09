@@ -376,7 +376,7 @@ sqMatrix sqMatrix::getInverseMatrix() {
 		inversify.addCol(idCol);
 	}
 
-	 inversify = inversify.FullGaussTransform();
+	inversify = inversify.FullGaussTransform();
 
 	std::cout << std::endl;
 	inversify.print();
