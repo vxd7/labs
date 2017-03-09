@@ -275,46 +275,47 @@ int Matrix::GaussTransform() {
 
 Matrix Matrix::FullGaussTransform() {
 	Matrix res(rows, cols, mtr);
-	for(int i = 0; i < rows ++i) {
-		if(res[i][i] != 0) {
-			for(int j = 0; j < rows; ++j) {
-				if( i != j) {//not diag elem
-					double mul = res[j][i]/res[i][i];
-					for(int k = 0; k < cols; ++k) {
-						res[j][k] -= mul * res[i][k];
-					}
-					
+	int lead;
+	int rix, iix;
+	double lv;
+	int rc = rows;
+
+	lead = 0;
+	for(rix = 0; rix < rc; ++rix) {
+		if(lead >= cols) {
+			return res;
+		}
+		iix = rix;
+		while(res[iix][lead] == 0) {
+			iix++;
+			if(iix == rc) {
+				iix = rix;
+				lead++;
+				if(lead == cols) {
+					return res;
 				}
 			}
-			
-		} else {
-			bool reduce = false;
-			for(int rb = i + 1; rb < rows; ++rb) {
-				if(res[rb][i]) {
-					res.swapRows(i, rb);
-					reduce = false;
-					break;
+		}
+		res.swapRows(iix, rix);
+
+		//normalize ROW
+		double llv = res[rix][lead];
+		for(int i = 0; i < cols; ++i) {
+			res[rix][i] /= llv;
+		}
+
+		for(iix = 0; iix < rc; ++iix) {
+			if(iix != rix) {
+				lv = res[iix][lead];
+				//Multiply and subtract
+				for(int ix = 0; ix < cols; ++ix) {
+					res[iix][ix] += (-1.0) * lv * res[rix][ix];
 				}
+				
 			}
-
-			if(reduce) {
-				res.swapCols(cols, i);
-			}
-			i--;
 		}
+		lead++;
 	}
-
-	for(int i = 0; i < rows; ++i) {
-		double mul = 1/res[i][i];
-		for(int j = 0; j < cols; ++j) {
-			res[i][j] *= mul;
-			
-		}
-		if(res[i][i] > eps) {     //EPSILON COMPARISION
-			res[i][i] = 1.0;
-		}
-	}
-
 	return res;
 }
 
@@ -375,7 +376,7 @@ sqMatrix sqMatrix::getInverseMatrix() {
 		inversify.addCol(idCol);
 	}
 
-	inversify.FullGaussTransform();
+	 inversify = inversify.FullGaussTransform();
 
 	std::cout << std::endl;
 	inversify.print();
