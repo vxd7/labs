@@ -77,5 +77,9 @@ int main() {
 	mycal3->operation();
 	std::cout << mycal3->outResult();
 
+	delete mycal;
+	delete mycal2;
+	delete mycal3;
+
 	return 0;
 }
