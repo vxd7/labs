@@ -4,36 +4,71 @@
 #include <QtWidgets>
 #include <QVector>
 
+class Modifier : public QObject{
+	Q_OBJECT
+public:
+	Modifier(void(*_userFunc)(double&)) : userFunc(_userFunc) { }
+	void (*userFunc)(double&);
+
+	std::string name;
+public slots:
+	void modifierSlot(double val) {
+		userFunc(val);
+		emit modSignal(val);
+	}
+
+signals:
+	void modSignal(double val);
+};
+
+class Prop : public QObject{
+	Q_OBJECT
+public:
+	Prop(double _val) : propVal(_val) { }
+	double propVal;
+public slots:
+	void propSlot(double val) {
+		propVal = val;
+	}
+};
+
 class Object {
 public:
 	std::string name;
 	Object(std::string _name) : name(_name) { }
 
-	std::vector<double> prop;
+	QVector<Prop*> objProp;
+	void addProp(double val) {
+		objProp.push_back(new Prop(val));
+	}
+
+	~Object() {
+		for(size_t i = 0; i < objProp.size(); ++i) {
+			delete objProp[i];
+		}
+	}
 };
 
 class Container : public QObject{
 	Q_OBJECT
-	void (*userFunc)(double&);
 
 public:
 	Container() { }
-	Container(void (*newUserFunc)(double&)){
-		userFunc = newUserFunc;
-	}
-
 	std::string name;
 
 	Container* next;
 	Object* obj;
 
-public slots:
-	void setValue(double value) {
-		userFunc(value);
-        emit valueChanged(value);
+	QVector<Modifier*> contMods;
+	void addModifier(void(*_userFunc)(double&)) {
+		contMods.push_back(new Modifier(_userFunc));
 	}
-signals:
-    void valueChanged(double newValue);
+
+	~Container() {
+		for(size_t i = 0; i < contMods.size(); ++i) {
+			delete contMods[i];
+		}
+	}
 };
 
 void PlusTwo(double& val) {
@@ -45,11 +80,6 @@ void Outt(double& value) {
 }
 
 int main() {
-	Container cnt1(PlusTwo);
-	Container cnt2(Outt);
-	QObject::connect(&cnt1, SIGNAL(valueChanged(double)), &cnt2, SLOT(setValue(double)));
-	
-	cnt1.setValue(10);
 	return 0;
 }
 #include "mmm.moc"
