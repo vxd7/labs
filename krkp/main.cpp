@@ -10,9 +10,12 @@ class Modifier : public QObject{
 public:
 	/* Constructor wih user defined function */
 	Modifier(void(*_userFunc)(double&)) : userFunc(_userFunc) { }
+	Modifier(std::string _name, void(*_userFunc)(double&)) : name(_name), userFunc(_userFunc) { }
 
 	/* Constructor with empty lambda function */
 	Modifier() : userFunc([](double&){}) { }
+	Modifier(std::string _name) : name(_name), userFunc([](double&){}) { }
+
 	void (*userFunc)(double&);
 
 	std::string name;
@@ -30,7 +33,9 @@ class Prop : public QObject{
 	Q_OBJECT
 public:
 	std::string name;
+	Prop(std::string _name, double _val) : name(_name), propVal(_val) { }
 	Prop(double _val) : propVal(_val) { }
+
 	double propVal;
 public slots:
 	void propSlotChangeVal(double changeVal) {
@@ -44,11 +49,15 @@ public slots:
 class Object {
 public:
 	Object() { }
+	Object(std::string _name) : name(_name) { }
 	std::string name;
 
 	QVector<Prop*> objProp;
 	void addProp(double val) {
 		objProp.push_back(new Prop(val));
+	}
+	void addProp(std::string _name, double val) {
+		objProp.push_back(new Prop(_name, val));
 	}
 
 	~Object() {
@@ -66,6 +75,12 @@ public:
 		next = NULL;
 		obj = NULL;
    	}
+
+	Container(const std::string& _name) : name(_name) {
+		next = NULL;
+		obj = NULL;
+   	}
+
 	std::string name;
 
 	Container* next;
@@ -80,11 +95,74 @@ public:
 		contMods.push_back(new Modifier());
 	}
 
+	void addModifier(std::string _name, void(*_userFunc)(double&)) {
+		contMods.push_back(new Modifier(_name, _userFunc));
+	}
+	void addModifier(std::string _name) {
+		contMods.push_back(new Modifier(_name));
+	}
+
+	Container* searchContainer(const std::string& _name) {
+		Container* nx = this;
+		while(nx->name != _name) {
+			nx=nx->next;
+			if(nx == NULL) break;
+		}
+
+		return nx;
+	}
+
+	void mkNestedContainers(QVector<std::string> cnts) {
+		if(this->next != NULL) {
+			//exception here
+			return;
+		}
+		QVector<std::string>::iterator it = cnts.begin();
+		Container* currentContainer = this;
+		while(it != cnts.end()) {
+			currentContainer->next = new Container(*it);
+			currentContainer = currentContainer->next;
+			it++;
+		}
+	}
+
+	std::string whoami() {
+		std::string res;
+		res += "Container name: " + name + '\n';
+		res += "Has next container: ";
+
+		if(next == NULL) res += "NO\n";
+		else res += next->name + '\n';
+
+		res += "Has object: ";
+		if(obj == NULL) res += "NO\n";
+		else res += obj->name + '\n';
+
+		res += "Container Modifiers: ";
+		if(contMods.size() != 0) {
+			res += '\n';
+			QVector<Modifier*>::iterator it = contMods.begin();
+			while(it != contMods.end()) {
+				res += (*it)->name + '\n';
+				it++;
+			}
+		} else res += "NO\n";
+
+		return res;
+
+	}
+
 	void addObject() {
 		if(obj != NULL) {
 			delete obj;
 		}
 		obj = new Object();
+	}
+	void addObject(std::string _name) {
+		if(obj != NULL) {
+			delete obj;
+		}
+		obj = new Object(_name);
 	}
 
 	~Container() {
@@ -135,13 +213,13 @@ int main() {
 	std::cout << cnt.obj->objProp[0]->propVal;
 	*/
 
-	Container room;
-	room.addModifier(heat);
-	room.next = new Container; //Table
-	room.next->next = new Container; //Bottle
-	room.next->next->addModifier(closed); //The bottle is closed now
-	room.next->next->addObject(); //Milk is in the bottle
-	room.next->next->obj->addProp(10); //Initial temperature of milk is 10
+	Container room("room");
+	room.addModifier("heat", heat);
+	room.next = new Container("table"); //Table
+	room.next->next = new Container("bottle"); //Bottle
+	room.next->next->addModifier("closed", closed); //The bottle is closed now
+	room.next->next->addObject("milk"); //Milk is in the bottle
+	room.next->next->obj->addProp("temperature", 10); //Initial temperature of milk is 10
 
 	std::cout << "Addresses:" << std::endl << &room << "->" << room.next << "->" << room.next->next << std::endl;
 
@@ -155,6 +233,16 @@ int main() {
 	room.contMods[0]->modifierSlot(0);
 	std::cout << "reading signal..." << std::endl;
 	std::cout << room.next->next->obj->objProp[0]->propVal;
+
+	std::cout << "Searching addresses:" << std::endl;
+	std::cout << "room: " << room.searchContainer("room") << std::endl;
+	std::cout << "table: " << room.searchContainer("table") << std::endl;
+	std::cout << "bottle: " << room.searchContainer("bottle") << std::endl;
+
+	std::cout << std::endl;
+	std::cout << room.whoami() << std::endl;
+	std::cout << room.searchContainer("table")->whoami() << std::endl;
+	std::cout << room.searchContainer("bottle")->whoami() << std::endl;
 	return 0;
 }
 #include "mmm.moc"
