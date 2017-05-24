@@ -16,9 +16,9 @@ public:
 	Modifier() : userFunc([](double&){}) { }
 	Modifier(std::string _name) : name(_name), userFunc([](double&){}) { }
 
+	std::string name;
 	void (*userFunc)(double&);
 
-	std::string name;
 public slots:
 	void modifierSlot(double val) {
 		userFunc(val);
@@ -59,6 +59,23 @@ public:
 	void addProp(std::string _name, double val) {
 		objProp.push_back(new Prop(_name, val));
 	}
+
+	std::string whoami() {
+		std::string res = "";
+		res += "Object: " + name + '\n';
+		res += "Has Properties: ";
+		if(objProp.size() != 0) {
+			res += '\n';
+			QVector<Prop*>::iterator it = objProp.begin();
+			while(it != objProp.end()) {
+				res += (*it)->name + '\n';
+				it++;
+			}
+		} else res += "NO\n";
+
+		return res;
+	}
+
 
 	~Object() {
 		for(size_t i = 0; i < objProp.size(); ++i) {
@@ -112,6 +129,32 @@ public:
 		return nx;
 	}
 
+	Object* searchObject(const std::string& _name) {
+		Container* nx = this;
+		bool found = false;
+
+		while(!found) {
+			if(nx->obj != NULL) {
+				if((nx->obj->name) == _name) {
+					found = true;
+					continue;
+				}
+			}
+			nx=nx->next;
+
+			if(nx == NULL) {
+				break;
+			}
+		}
+
+		if(!found) {
+			return NULL;
+		}
+
+		return nx->obj;
+
+	}
+
 	void mkNestedContainers(QVector<std::string> cnts) {
 		if(this->next != NULL) {
 			//exception here
@@ -127,7 +170,7 @@ public:
 	}
 
 	std::string whoami() {
-		std::string res;
+		std::string res = "";
 		res += "Container name: " + name + '\n';
 		res += "Has next container: ";
 
@@ -243,6 +286,7 @@ int main() {
 	std::cout << room.whoami() << std::endl;
 	std::cout << room.searchContainer("table")->whoami() << std::endl;
 	std::cout << room.searchContainer("bottle")->whoami() << std::endl;
+	std::cout << room.searchObject("milk")->whoami() << std::endl;
 	return 0;
 }
 #include "mmm.moc"
