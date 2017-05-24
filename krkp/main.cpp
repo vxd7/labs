@@ -242,6 +242,7 @@ void closed(double& h) {
 	h -= 0.2*h;
 }
 
+
 int main() {
 	/*
 	Container cnt;
