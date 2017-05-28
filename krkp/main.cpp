@@ -6,7 +6,7 @@
 #include <stack>
 #include <unistd.h>
 
-class Modifier : public QObject{
+class Modifier : public QObject {
 	Q_OBJECT
 public:
 	/* Constructor wih user defined function */
@@ -218,6 +218,10 @@ public:
 			}
 		} else res += "NO\n";
 
+		res += "Has Properties: ";
+		if(contProp == NULL) res += "NO\n";
+		else res += contProp->name + '\n';
+
 		return res;
 
 	}
@@ -298,6 +302,7 @@ int main() {
 	std::cout<<"room temperature: "<<room.contProp->propVal<<std::endl;
 	std::cout<<"milk initial temperature: " << room.searchObject("milk")->objProp[0]->propVal<<std::endl;
 
+	std::cout << room.whoami();
 	while(room.contProp->propVal > room.searchObject("milk")->objProp[0]->propVal)
 	{
 		room.searchModifier("heat")->modifierSlot(0);
