@@ -9,7 +9,7 @@
 class Modifier : public QObject {
 	Q_OBJECT
 public:
-	/* Constructor wih user defined function */
+	/* Constructor with user defined function */
 	Modifier(void(*_userFunc)(double&)) : userFunc(_userFunc) { }
 	Modifier(std::string _name, void(*_userFunc)(double&)) : name(_name), userFunc(_userFunc) { }
 
@@ -64,6 +64,7 @@ public:
 	std::string whoami() {
 		std::string res = "";
 		res += "Object: " + name + '\n';
+
 		res += "Has Properties: ";
 		if(objProp.size() != 0) {
 			res += '\n';
@@ -108,7 +109,7 @@ public:
 	Prop* contProp;
 	QVector<Modifier*> contMods;
 
-	void addProp(std::string _name,double _val)
+	void addProp(const std::string& _name, double _val)
 	{
 		 contProp = new Prop(_name, _val);
 	}
@@ -116,6 +117,7 @@ public:
 	void addModifier(void(*_userFunc)(double&)) {
 		contMods.push_back(new Modifier(_userFunc));
 	}
+
 	void addModifier() {
 		contMods.push_back(new Modifier());
 	}
@@ -123,6 +125,7 @@ public:
 	void addModifier(std::string _name, void(*_userFunc)(double&)) {
 		contMods.push_back(new Modifier(_name, _userFunc));
 	}
+
 	void addModifier(std::string _name) {
 		contMods.push_back(new Modifier(_name));
 	}
@@ -182,12 +185,12 @@ public:
 		
 
 
-	void mkNestedContainers(QVector<std::string> cnts) {
+	void mkNestedContainers(const QVector<std::string>& cnts) {
 		if(this->next != NULL) {
 			//exception here
 			return;
 		}
-		QVector<std::string>::iterator it = cnts.begin();
+		QVector<std::string>::const_iterator it = cnts.begin();
 		Container* currentContainer = this;
 		while(it != cnts.end()) {
 			currentContainer->next = new Container(*it);
@@ -232,7 +235,7 @@ public:
 		}
 		obj = new Object();
 	}
-	void addObject(std::string _name) {
+	void addObject(const std::string& _name) {
 		if(obj != NULL) {
 			delete obj;
 		}
@@ -279,7 +282,6 @@ void closed(double& h) {
 
 int main() {
 
-
 	Container room("room");
 	room.addModifier("heat", heat);
 	room.addProp("temperature",25);
@@ -290,26 +292,31 @@ int main() {
 	room.next->next->obj->addProp("temperature", 10); //Initial temperature of milk is 10
 
 
-	std::cout << "Connecting..." << std::endl;
 	//Connect room to bottle
 	QObject::connect(room.searchModifier("heat"), SIGNAL(modSignal(double)), room.searchContainer("bottle")->searchModifier("closed"), SLOT(modifierSlot(double)));
+
 	//Connect bottle to the milk
 	QObject::connect(room.searchContainer("bottle")->searchModifier("closed"), SIGNAL(modSignal(double)), room.searchObject("milk")->objProp[0], SLOT(propSlotChangeVal(double)));
 
-//	std::cout << "Passing signal..." << std::endl;
+	std::cout << "room temperature: " << room.contProp->propVal << std::endl;
+	std::cout << "milk initial temperature: " << room.searchObject("milk")->objProp[0]->propVal << std::endl;
 
-//	std::cout << "Reading signal..." << std::endl;
-	std::cout<<"room temperature: "<<room.contProp->propVal<<std::endl;
-	std::cout<<"milk initial temperature: " << room.searchObject("milk")->objProp[0]->propVal<<std::endl;
+	std::cout << std::endl;
+	std::cout << "***General simulation info***" << std::endl;
 
-	std::cout << room.whoami();
+	std::cout << room.whoami() << std::endl;
+	std::cout << room.searchContainer("table")->whoami() << std::endl;
+	std::cout << room.searchContainer("bottle")->whoami() << std::endl;
+	std::cout << room.searchObject("milk")->whoami() << std::endl;
+
+	std::cout << "***Simulation***" << std::endl;
 	while(room.contProp->propVal > room.searchObject("milk")->objProp[0]->propVal)
 	{
 		room.searchModifier("heat")->modifierSlot(0);
-		std::cout<<"milk temperature: "<< room.searchObject("milk")->objProp[0]->propVal<<std::endl;
+		std::cout << "milk temperature: " << room.searchObject("milk")->objProp[0]->propVal << std::endl;
 		sleep(1);
 	}
-
+	std::cout << "Thermodinamical balance reached" << std::endl;
 
 	return 0;
 }
