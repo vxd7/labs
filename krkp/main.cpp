@@ -4,6 +4,7 @@
 #include <QtWidgets>
 #include <QVector>
 #include <stack>
+#include <unistd.h>
 
 class Modifier : public QObject{
 	Q_OBJECT
@@ -91,19 +92,26 @@ public:
 	Container() {
 		next = NULL;
 		obj = NULL;
+		contProp = NULL;
    	}
 
 	Container(const std::string& _name) : name(_name) {
 		next = NULL;
 		obj = NULL;
+		contProp = NULL;
    	}
 
 	std::string name;
 
 	Container* next;
 	Object* obj;
-
+	Prop* contProp;
 	QVector<Modifier*> contMods;
+
+	void addProp(std::string _name,double _val)
+	{
+		 contProp = new Prop(_name, _val);
+	}
 
 	void addModifier(void(*_userFunc)(double&)) {
 		contMods.push_back(new Modifier(_userFunc));
@@ -154,6 +162,25 @@ public:
 		return nx->obj;
 
 	}
+
+	Modifier* searchModifier(const std::string& _name)
+	{
+		if(!contMods.isEmpty())
+		{
+			for(int i=0;i<contMods.size();++i)
+			{
+				if(contMods[i]->name == _name)							
+				{						
+					return contMods[i];
+
+				}
+			}
+		}
+		return NULL;
+	}
+		
+		
+
 
 	void mkNestedContainers(QVector<std::string> cnts) {
 		if(this->next != NULL) {
@@ -219,6 +246,9 @@ public:
 		if(next != NULL) {
 			delete next;
 		}
+		if(contProp != NULL){
+		 delete contProp;
+		 }
 	}
 
 
@@ -244,50 +274,38 @@ void closed(double& h) {
 
 
 int main() {
-	/*
-	Container cnt;
-	//cnt.addModifier(PlusTwo);
-	cnt.addModifier();
-	cnt.addObject();
-	cnt.obj->addProp(3);
 
-	QObject::connect(cnt.contMods[0], SIGNAL(modSignal(double)), cnt.obj->objProp[0], SLOT(propSlot(double)));
-	cnt.contMods[0]->modSignal(222);
-	//cnt.contMods[0]->modifierSlot(222);
-	std::cout << cnt.obj->objProp[0]->propVal;
-	*/
 
 	Container room("room");
 	room.addModifier("heat", heat);
+	room.addProp("temperature",25);
 	room.next = new Container("table"); //Table
 	room.next->next = new Container("bottle"); //Bottle
 	room.next->next->addModifier("closed", closed); //The bottle is closed now
 	room.next->next->addObject("milk"); //Milk is in the bottle
 	room.next->next->obj->addProp("temperature", 10); //Initial temperature of milk is 10
 
-	std::cout << "Addresses:" << std::endl << &room << "->" << room.next << "->" << room.next->next << std::endl;
 
 	std::cout << "Connecting..." << std::endl;
 	//Connect room to bottle
-	QObject::connect(room.contMods[0], SIGNAL(modSignal(double)), room.next->next->contMods[0], SLOT(modifierSlot(double)));
+	QObject::connect(room.searchModifier("heat"), SIGNAL(modSignal(double)), room.searchContainer("bottle")->searchModifier("closed"), SLOT(modifierSlot(double)));
 	//Connect bottle to the milk
-	QObject::connect(room.next->next->contMods[0], SIGNAL(modSignal(double)), room.next->next->obj->objProp[0], SLOT(propSlotChangeVal(double)));
+	QObject::connect(room.searchContainer("bottle")->searchModifier("closed"), SIGNAL(modSignal(double)), room.searchObject("milk")->objProp[0], SLOT(propSlotChangeVal(double)));
 
-	std::cout << "Passing signal..." << std::endl;
-	room.contMods[0]->modifierSlot(0);
-	std::cout << "reading signal..." << std::endl;
-	std::cout << room.next->next->obj->objProp[0]->propVal;
+//	std::cout << "Passing signal..." << std::endl;
 
-	std::cout << "Searching addresses:" << std::endl;
-	std::cout << "room: " << room.searchContainer("room") << std::endl;
-	std::cout << "table: " << room.searchContainer("table") << std::endl;
-	std::cout << "bottle: " << room.searchContainer("bottle") << std::endl;
+//	std::cout << "Reading signal..." << std::endl;
+	std::cout<<"room temperature: "<<room.contProp->propVal<<std::endl;
+	std::cout<<"milk initial temperature: " << room.searchObject("milk")->objProp[0]->propVal<<std::endl;
 
-	std::cout << std::endl;
-	std::cout << room.whoami() << std::endl;
-	std::cout << room.searchContainer("table")->whoami() << std::endl;
-	std::cout << room.searchContainer("bottle")->whoami() << std::endl;
-	std::cout << room.searchObject("milk")->whoami() << std::endl;
+	while(room.contProp->propVal > room.searchObject("milk")->objProp[0]->propVal)
+	{
+		room.searchModifier("heat")->modifierSlot(0);
+		std::cout<<"milk temperature: "<< room.searchObject("milk")->objProp[0]->propVal<<std::endl;
+		sleep(1);
+	}
+
+
 	return 0;
 }
 #include "mmm.moc"
