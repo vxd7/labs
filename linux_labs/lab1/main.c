@@ -35,21 +35,17 @@ int main(int argc, char* argv[]) {
      * +5 characters -- '_copy'
      */
     copied_filename = (char *)malloc(sizeof(char) * (strlen(filename) + 5));
-    strcat(copied_filename, filename);
-    strcat(copied_filename, "_copy");
+    sprintf(copied_filename, "%s_copy", filename);
 
     /* Create a copy of file 'filename':
      * First we create a shell commandline as 
      * cp 'filename' 'copied_filename'
      * 
      * And fire up a system!
-     * +50 for shell command
+     * +20 for shell command
      */
-    system_cmd = (char *)malloc(sizeof(char) * ((strlen(filename) + strlen(copied_filename) + 50)));
-    strcat(system_cmd, "cp ");
-    strcat(system_cmd, filename);
-    strcat(system_cmd, " ");
-    strcat(system_cmd, copied_filename);
+    system_cmd = (char *)malloc(sizeof(char) * ((strlen(filename) + strlen(copied_filename) + 20)));
+    sprintf(system_cmd, "cp %s %s", filename, copied_filename);
 
     /* Finally copy file! */
     if(system(system_cmd) != 0) {
@@ -79,19 +75,18 @@ int main(int argc, char* argv[]) {
          * If files are identical, diff will return 0
          */
         char *diff_str = (char *)malloc(sizeof(char) * (strlen(readbuf) + 20));
-        strcat(diff_str, "diff ");
-        strcat(diff_str, readbuf);
+        sprintf(diff_str, "diff %s", readbuf);
 
         if(system(diff_str) == 0) {
             /* No differences were found */
             /* Then we remove original file */
             char *rm_str = (char *)malloc(sizeof(char) * (strlen(filename) + 20));
-            strcat(rm_str, "rm ");
-            strcat(rm_str, filename);
+            sprintf(rm_str, "rm %s", filename);
 
             system(rm_str);
             free(rm_str);
         }
+
         free(diff_str);
         exit(0);
     } else {
@@ -100,12 +95,9 @@ int main(int argc, char* argv[]) {
 
         /* Prepare the information to be sent to child process */
         char *sendinfo = (char *)malloc(sizeof(char) * (strlen(filename) + strlen(copied_filename) + 5));
-        strcat(sendinfo, filename);
-        strcat(sendinfo, " ");
-        strcat(sendinfo, copied_filename);
+        sprintf(sendinfo, "%s %s", filename, copied_filename);
 
         sendinfo_subproc(fd[1], sendinfo);
-
         free(sendinfo);
 
         /* Wait for subprocess to finish */
@@ -145,12 +137,9 @@ void mysig(int a) {
     if (signal_count == 1) {
         printf("%s\n", copied_filename);
         char *act = (char *)malloc(sizeof(char) * (strlen(filename) + strlen(copied_filename) + 20));
-        strcat(act, "mv ");
-        strcat(act, copied_filename);
-        strcat(act, " ");
-        strcat(act, filename);
-        system(act);
+        sprintf(act, "mv %s %s", copied_filename, filename);
 
+        system(act);
         free(act);
     }
 }
