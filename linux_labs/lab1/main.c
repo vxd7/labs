@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
 
 int sendinfo_subproc(int fd, char *info) {
     if(write(fd, info, sizeof(char) * strlen(info)) == (-1)) {
-        fprintf(stderr, "Failed tp write info to subprocess\n");
+        fprintf(stderr, "Failed to write info to subprocess\n");
         return 1;
     }
     return 0;
@@ -135,7 +135,7 @@ int readinfo_baseproc(int fd, char *infobuf, int n) {
 void mysig(int a) {
     signal_count++;
     if (signal_count == 1) {
-        printf("%s\n", copied_filename);
+        printf("Caught first SIGINT: renaming %s to %s\n", copied_filename, filename);
         char *act = (char *)malloc(sizeof(char) * (strlen(filename) + strlen(copied_filename) + 20));
         sprintf(act, "mv %s %s", copied_filename, filename);
 
