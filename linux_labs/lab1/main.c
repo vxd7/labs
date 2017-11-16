@@ -7,7 +7,7 @@
 
 int sendinfo_subproc(int fd, char *info);
 int readinfo_baseproc(int fd, char *infobuf, int n);
-void mysig(int);
+void mysig(int); /* Signal handler (custom) */
 
 int signal_count = 0;
 
@@ -20,9 +20,9 @@ int main(int argc, char* argv[]) {
     struct sigaction msig;
     sigset_t mask;
     sigemptyset(&mask);
-    sigaddset(&mask, SIGINT);
+    sigaddset(&mask, SIGINT); // Block SIGINT signal
     msig.sa_mask = mask;
-    msig.sa_handler = mysig;
+    msig.sa_handler = mysig; // Pointer to function-handler
     sigaction(SIGINT, &msig, 0);
 
     if(argc <= 1) {
@@ -90,7 +90,7 @@ int main(int argc, char* argv[]) {
         free(diff_str);
         exit(0);
     } else {
-        /* BASE process */
+        /* BASE process, fork() returns PID of child process */
         close(fd[0]);
 
         /* Prepare the information to be sent to child process */
