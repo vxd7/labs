@@ -1,0 +1,66 @@
+[1mtrue.[0m
+
+consult('tk4_3').
+
+
+[1mtrue.[0m
+
+lives(Who, Where).
+
+
+Who = zebra,
+Where = ground ;[1m;[0m
+Who = dog,
+Where = ground ;[1m;[0m
+Who = carp,
+Where = ground ;[1m;[0m
+Who = whale,
+Where = water ;[1m;[0m
+Who = cat,
+Where = ground ;[1m;[0m
+Who = crocodile,
+Where = water ;[1m;[0m
+Who = crocodile,
+Where = ground ;[1m;[0m
+Who = frog,
+Where = water ;[1m;[0m
+Who = frog,
+Where = ground ;[1m;[0m
+Who = duck,
+Where = water ;[1m;[0m
+Who = duck,
+Where = ground ;[1m;[0m
+Who = duck,
+Where = air ;[1m;[0m
+Who = eagle,
+Where = air ;[1m;[0m
+Who = eagle,
+Where = ground ;[1m;[0m
+Who = bourevestnik,
+Where = water ;[1m;[0m
+Who = bourevestnik,
+Where = air.
+
+lives(Who, ground), Who \= dog.
+
+
+Who = zebra ;[1m;[0m
+Who = carp ;[1m;[0m
+Who = cat ;[1m;[0m
+Who = crocodile ;[1m;[0m
+Who = frog ;[1m;[0m
+Who = duck ;[1m;[0m
+Who = eagle ;[1m;[0m
+[1;31mfalse.[0m
+
+lives(Who, ground), lives(Who, water).
+
+
+Who = crocodile ;[1m;[0m
+Who = frog ;[1m;[0m
+Who = duck ;[1m;[0m
+[1;31mfalse.[0m
+
+noprotocol.
+
+

@@ -1,0 +1,51 @@
+[1mtrue.[0m
+
+consult('tk4_2').
+
+
+[1mtrue.[0m
+
+has('Pyotr', What).
+
+
+What = rub(5000) ;[1m;[0m
+What = tv ;[1m;[0m
+What = refrigerator.
+
+has(Who, rub(10000)).
+
+
+Who = 'Ivan' ;[1m;[0m
+[1;31mfalse.[0m
+
+has(Who, What).
+
+
+Who = 'Ivan',
+What = rub(10000) ;[1m;[0m
+Who = 'Ivan',
+What = tv ;[1m;[0m
+Who = 'Ivan',
+What = car('Volga', cherry) ;[1m;[0m
+Who = 'Ivan',
+What = radio ;[1m;[0m
+Who = 'Pyotr',
+What = rub(5000) ;[1m;[0m
+Who = 'Pyotr',
+What = tv ;[1m;[0m
+Who = 'Pyotr',
+What = refrigerator ;[1m;[0m
+Who = 'Kolya',
+What = rub(20000) ;[1m;[0m
+Who = 'Kolya',
+What = tv.
+
+has('Ivan', What), not(has('Kolya', What)), What \= rub(_).
+
+
+What = car('Volga', cherry) ;[1m;[0m
+What = radio.
+
+noprotocol.
+
+

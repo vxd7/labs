@@ -1,0 +1,243 @@
+[1mtrue.[0m
+
+consult('tk2_1')
+.
+
+
+[1mtrue.[0m
+
+listing.
+
+
+
+:- dynamic exception/3.
+:- multifile exception/3.
+
+
+:- dynamic file_search_path/2.
+:- multifile file_search_path/2.
+
+file_search_path(library, A) :-
+	library_directory(A).
+file_search_path(swi, A) :-
+	system:current_prolog_flag(home, A).
+file_search_path(foreign, swi(B)) :-
+    system:
+    (   current_prolog_flag(arch, A),
+	atom_concat('lib/', A, B)
+    ).
+file_search_path(foreign, swi(A)) :-
+    system:
+    (   (   current_prolog_flag(windows, true)
+	->  A=bin
+	;   A=lib
+	)
+    ).
+file_search_path(path, C) :-
+    system:
+    (   getenv('PATH', A),
+	(   current_prolog_flag(windows, true)
+	->  atomic_list_concat(B, ;, A)
+	;   atomic_list_concat(B, :, A)
+	),
+	'$member'(C, B),
+	'$no-null-bytes'(C)
+    ).
+file_search_path(user_profile, app_preferences('.')).
+file_search_path(app_data, A) :-
+	'$toplevel':catch(expand_file_name('~/lib/swipl', [A]), _, fail).
+file_search_path(app_preferences, A) :-
+	'$toplevel':catch(expand_file_name(~, [A]), _, fail).
+file_search_path(autoload, library('.')).
+file_search_path(pack, app_data(pack)).
+file_search_path(pack, swi(pack)).
+file_search_path(library, A) :-
+	'$pack':pack_dir(_, prolog, A).
+file_search_path(foreign, A) :-
+	'$pack':pack_dir(_, foreign, A).
+file_search_path(pce, A) :-
+	link_xpce:pcehome_(A).
+file_search_path(library, pce('prolog/lib')).
+file_search_path(foreign, pce(B)) :-
+    link_xpce:
+    (   current_prolog_flag(arch, A),
+	atom_concat('lib/', A, B)
+    ).
+
+:- dynamic prolog_file_type/2.
+:- multifile prolog_file_type/2.
+
+prolog_file_type(pl, prolog).
+prolog_file_type(prolog, prolog).
+prolog_file_type(qlf, prolog).
+prolog_file_type(qlf, qlf).
+prolog_file_type(A, executable) :-
+	system:current_prolog_flag(shared_object_extension, A).
+
+:- multifile prolog_clause_name/2.
+
+
+:- dynamic resource/3.
+:- multifile resource/3.
+
+
+:- dynamic expand_query/4.
+:- multifile expand_query/4.
+
+
+:- multifile prolog_predicate_name/2.
+
+
+:- dynamic expand_answer/2.
+:- multifile expand_answer/2.
+
+
+:- thread_local thread_message_hook/3.
+:- dynamic thread_message_hook/3.
+:- volatile thread_message_hook/3.
+
+
+:- dynamic message_hook/3.
+:- multifile message_hook/3.
+
+
+:- dynamic portray/1.
+:- multifile portray/1.
+
+
+:- dynamic prolog_exception_hook/4.
+:- multifile prolog_exception_hook/4.
+
+prolog_exception_hook(error(A, context(D, B)), error(A, context(prolog_stack(J), B)), G, C) :-
+    prolog_stack:
+    (   current_prolog_flag(backtrace, true),
+	(   atom(C)
+	->  debug(backtrace,
+		  'Got uncaught (guard = ~q) exception ~p (Ctx0=~p)',
+		  [C, A, D]),
+	    stack_guard(C)
+	;   prolog_frame_attribute(C, predicate_indicator, E),
+	    debug(backtrace,
+		  'Got exception ~p (Ctx0=~p, Catcher=~p)',
+		  [A, D, E]),
+	    stack_guard(E)
+	),
+	(   current_prolog_flag(backtrace_depth, F)
+	->  F>0
+	;   F=20
+	),
+	get_prolog_backtrace(G, F, H),
+	debug(backtrace, 'Stack = ~p', [H]),
+	clean_stack(H, I),
+	join_stacks(D, I, J)
+    ).
+
+:- multifile message_property/2.
+
+
+loves('Ellen', tennis).
+loves('John', football).
+loves('Tom', baseball).
+loves('Eric', swimming).
+loves('Mark', tennis).
+loves('Bill', A) :-
+	loves('Tom', A).
+
+:- multifile prolog_list_goal/1.
+
+
+:- dynamic prolog_event_hook/1.
+:- multifile prolog_event_hook/1.
+
+
+:- dynamic library_directory/1.
+:- multifile library_directory/1.
+
+library_directory(B) :-
+    '$parms':
+    (   cached_library_directory(local, A=lib, A),
+	B=A
+    ).
+library_directory(B) :-
+    '$parms':
+    (   cached_library_directory(user,
+				 expand_file_name('~/lib/prolog', [A]),
+				 A),
+	B=A
+    ).
+library_directory(B) :-
+    '$parms':
+    (   cached_library_directory(system,
+				 absolute_file_name(swi(library), A),
+				 A),
+	B=A
+    ).
+library_directory(B) :-
+    '$parms':
+    (   cached_library_directory(clp,
+				 absolute_file_name(swi('library/clp'), A),
+				 A),
+	B=A
+    ).
+
+:- dynamic prolog_load_file/2.
+:- multifile prolog_load_file/2.
+
+[1mtrue.[0m
+
+loves('Bill', baseball).
+
+
+[1mtrue.[0m
+
+loves('Bill', tennis).
+
+
+[1;31mfalse.[0m
+
+loves(Who, tennis).
+
+
+Who = 'Ellen' ;[1m;[0m
+Who = 'Mark' ;[1m;[0m
+[1;31mfalse.[0m
+
+loves('Mark', What), loves('Ellen', What).
+
+
+What = tennis.
+
+loves(Who, What).
+
+
+Who = 'Ellen',
+What = tennis ;[1m;[0m
+Who = 'John',
+What = football ;[1m;[0m
+Who = 'Tom',
+What = baseball ;[1m;[0m
+Who = 'Eric',
+What = swimming ;[1m;[0m
+Who = 'Mark',
+What = tennis ;[1m;[0m
+Who = 'Bill',
+What = baseball.
+
+loves(Who, _).
+
+
+Who = 'Ellen' [1m.[0m
+
+loves(Who, _).
+
+
+Who = 'Ellen' ;[1m;[0m
+Who = 'John' ;[1m;[0m
+Who = 'Tom' ;[1m;[0m
+Who = 'Eric' ;[1m;[0m
+Who = 'Mark' ;[1m;[0m
+Who = 'Bill'.
+
+noprotocol.
+
+

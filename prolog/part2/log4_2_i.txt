@@ -1,0 +1,35 @@
+[1mtrue.[0m
+
+[tk4_2].
+
+
+[31mWarning: /home/sapka/prolog/tasks/part2/tk4_2.prolog:32:
+	Clauses of has/2 are not together in the source-file
+	  Earlier definition at /home/sapka/prolog/tasks/part2/tk4_2.prolog:2
+	  Current predicate: is_wife/2
+	  Use :- discontiguous has/2. to suppress this message
+[0m[1mtrue.[0m
+
+has('Maria', car(_,_)).
+
+
+[1mtrue [0m;[1m;[0m
+[1;31mfalse.[0m
+
+has('Maria', car(_,_)).
+
+
+[1mtrue [0m[1m.[0m
+
+can_buy('Anna', Thing), not(has('Maria', Thing)).
+
+
+Thing = refrigerator ;[1m;[0m
+Thing = video ;[1m;[0m
+Thing = priyomnik ;[1m;[0m
+Thing = watches ;[1m;[0m
+[1;31mfalse.[0m
+
+noprotocol.
+
+

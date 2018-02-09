@@ -1,0 +1,36 @@
+[1mtrue.[0m
+
+has('Pyotr', rub(Amount)), price(video, Price), Amount >= Price.
+
+
+[31;1mERROR: Undefined procedure: has/2 (DWIM could not correct goal)
+[0m[tk4_2].
+
+
+[1mtrue.[0m
+
+has('Pyotr', rub(Amount)), price(video, Price), Amount >= Price.
+
+
+[1;31mfalse.[0m
+
+
+can_buy                canceled               canonical_listener     canonicalise_option
+can_open_file          cannot_redefine_comma  canonical_pi           canonicalise_options
+cancel_halt            cannot_start_term      canonical_source_file  canonicalise_options2
+noprotocol.
+
+
+findall(Amount, has(_, rub(Amount)), Myset), sort(Myset, Sorted), length(Sorted, S), nth1(S, Sorted, MaxAmount), has(Whoo, rub(MaxAmount)).
+
+Myset = [10000, 5000, 20000, 20000, 10000, 5000],
+Sorted = [5000, 10000, 20000],
+S = 3,
+MaxAmount = 20000,
+Whoo = 'Kolya' ;
+Myset = [10000, 5000, 20000, 20000, 10000, 5000],
+Sorted = [5000, 10000, 20000],
+S = 3,
+MaxAmount = 20000,
+Whoo = 'Anna' ;
+false.

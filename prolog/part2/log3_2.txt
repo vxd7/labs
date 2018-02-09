@@ -1,0 +1,42 @@
+[1mtrue.[0m
+
+consult('tk3_2').
+
+
+[1mtrue.[0m
+
+has(Who, book('Monten', _)).
+
+
+Who = 'Lenna'.
+
+has(Who, book(Author, Title)).
+
+
+Who = 'Oleg',
+Author = 'Pushkin',
+Title = 'Kaptain\'s daughter' ;[1m;[0m
+Who = 'Lenna',
+Author = 'Monten',
+Title = 'Opiti'.
+
+has(Who, What).
+
+
+Who = 'Oleg',
+What = book('Pushkin', 'Kaptain\'s daughter') ;[1m;[0m
+Who = 'Lenna',
+What = book('Monten', 'Opiti') ;[1m;[0m
+Who = 'Ira',
+What = handkerchief(blue) ;[1m;[0m
+Who = 'Lenna',
+What = handkerchief(red).
+
+has('Lenna', handkerchief(blue)).
+
+
+[1;31mfalse.[0m
+
+noprotocol.
+
+

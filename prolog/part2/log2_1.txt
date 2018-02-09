@@ -1,0 +1,34 @@
+[1mtrue.[0m
+
+consult('tk2_1').
+
+
+[1mtrue.[0m
+
+car(Name, Price, Color, Age), Price < 5000.
+
+
+Name = moskvich,
+Price = 3000,
+Color = blue,
+Age = 5 ;[1m;[0m
+Name = 'VAZ',
+Price = 4000,
+Color = blue,
+Age = 10 ;[1m;[0m
+[1;31mfalse.[0m
+
+worth_buying(X, 10000).
+
+
+X = moskvich ;[1m;[0m
+[1;31mfalse.[0m
+
+car(Name, 10000, Color, Age).
+
+
+[1;31mfalse.[0m
+
+noprotocol.
+
+
