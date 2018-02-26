@@ -16,3 +16,7 @@ worth_buying(Name, Target_price) :- car(Name, P, C, A), (C = green ; C = blue), 
 
 % tk d) What cars can be bought for 10000
 cars_for_10000(Name, Price) :- car(Name, Price, _, _), Price =< 10000.
+
+probeg_min(Name, Price, Color) :- car(Name, Price, Color, P1), not((car(_, _, _, P2), P2 < P1)).
+
+colors_not_prob(Color) :- car(Name, Price, Color, Prob), not(probeg_min(Name, Price, Color)).
