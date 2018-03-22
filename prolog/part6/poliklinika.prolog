@@ -53,7 +53,7 @@ count_patients_of_doctor_with_diagnosis(_, _, Counter):-
 out_doctors_treats_num_patients_with_diagnosis(Num, Diagnosis):-
     doctor(DoctorName, DoctorSurname),
     count_patients_of_doctor_with_diagnosis(doctor(DoctorName, DoctorSurname), Diagnosis, Counter),
-    ((Counter == Num), !, write(doctor(DoctorName, DoctorSurname), nl)), fail.
+    ((Counter == Num), !, write(doctor(DoctorName, DoctorSurname)), nl), fail.
 
 out_patients_same_symptoms_as(patient(PatientName, PatientSurname)):-
     treats(_, patient(PatientName, PatientSurname), Symptoms, _), !,
@@ -80,4 +80,4 @@ add_doctors_patients:-
     add_patient(patient('PatientD', 'PatientDSurname'), doctor('Alex', 'K'), blood_everuwhere, dead),
 
     add_patient(patient('PatientE', 'PatientESurname'), doctor('Ivan', 'Ivanov'), headache, idiot),
-    add_patient(patient('PatientF', 'PatientFSurname'), doctor('Ivan', 'Ivanov'), something, dumb_as_fuakkk).
+    add_patient(patient('PatientF', 'PatientFSurname'), doctor('Ivan', 'Ivanov'), something, idiot).
