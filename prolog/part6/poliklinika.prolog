@@ -56,7 +56,7 @@ count_patients_of_doctor_with_diagnosis(_, _, Counter):-
 out_doctors_treats_num_patients_with_diagnosis(Num, Diagnosis):-
     doctor(DoctorName, DoctorSurname),
     count_patients_of_doctor_with_diagnosis(doctor(DoctorName, DoctorSurname), Diagnosis, Counter),
-    ((Counter == Num), !, write(doctor(DoctorName, DoctorSurname)), nl), fail.
+    ((Counter == Num), write(doctor(DoctorName, DoctorSurname)), nl), fail.
 out_doctors_treats_num_patients_with_diagnosis(_).
 
 out_patients_same_symptoms_as(patient(PatientName, PatientSurname)):-
@@ -87,6 +87,33 @@ add_doctors_patients:-
 
     add_patient(patient('PatientE', 'PatientESurname'), doctor('Ivan', 'Ivanov'), headache, idiot),
     add_patient(patient('PatientF', 'PatientFSurname'), doctor('Ivan', 'Ivanov'), something, idiot).
+
+add_test_doctors_patients:-
+    add_doctor(doctor('Doctor1Name', 'Doctor1Surname')),
+    add_doctor(doctor('Doctor2Name', 'Doctor2Surname')),  % Doctors have same surname
+    add_doctor(doctor('Doctor2Name_1', 'Doctor2Surname')),%
+    add_doctor(doctor('Doctor3Name', 'Doctor3Surname')),
+    add_doctor(doctor('Doctor4Name', 'Doctor4Surname')),
+    add_doctor(doctor('Doctor5Name', 'Doctor5Surname')),
+    add_doctor(doctor('Doctor6Name', 'Doctor6Surname')),
+
+    add_patient(patient('Patient1Name', 'Patient1Surname'), doctor('Doctor1Name', 'Doctor1Surname'), symptom1, diagnos1),   %
+    add_patient(patient('Patient2Name', 'Patient2Surname'), doctor('Doctor1Name', 'Doctor1Surname'), symptom2, diagnos2),   % Patients of Doctor1
+    add_patient(patient('Patient3Name', 'Patient3Surname'), doctor('Doctor1Name', 'Doctor1Surname'), symptom3, diagnos3),   %
+
+    add_patient(patient('Patient4Name', 'Doctor2Surname'), doctor('Doctor2Name', 'Doctor2Surname'), symptom4, diagnos4),    % Patient 4 has same surname as doctor2
+
+    add_patient(patient('Patient5Name', 'Patient5Surname'), doctor('Doctor3Name', 'Doctor3Surname'), symptom11, diagnos4),  %
+    add_patient(patient('Patient6Name', 'Patient6Surname'), doctor('Doctor3Name', 'Doctor3Surname'), symptom11, diagnos4),  % 3 patients have same doctor and same diagnosis
+    add_patient(patient('Patient7Name', 'Patient7Surname'), doctor('Doctor3Name', 'Doctor3Surname'), symptom13, diagnos4),  %
+
+    add_patient(patient('Patient8Name', 'Patient8Surname'), doctor('Doctor4Name', 'Doctor4Surname'), symptom21, diagnos4),  %
+    add_patient(patient('Patient9Name', 'Patient9Surname'), doctor('Doctor4Name', 'Doctor4Surname'), symptom22, diagnos4),  % 3 patients have same doctor and same diagnosis
+    add_patient(patient('Patient10Name', 'Patient10Surname'), doctor('Doctor4Name', 'Doctor4Surname'), symptom23, diagnos4),%
+
+    add_patient(patient('Patient11Name', 'Patient11Surname'), doctor('Doctor5Name', 'Doctor5Surname'), symptom31, diagnos5),%
+    add_patient(patient('Patient12Name', 'Patient12Surname'), doctor('Doctor5Name', 'Doctor5Surname'), symptom32, diagnos4),% Patients of doctor5 have same diagnosis as
+    add_patient(patient('Patient13Name', 'Patient13Surname'), doctor('Doctor4Name', 'Doctor4Surname'), symptom33, diagnos4).% patients of doctor4
 
 % Menu
 menu:-
@@ -141,7 +168,7 @@ menu_pt(6):- nl, write('Input doctor A, doctor B, patient of doctor B info:'), n
     doctor(DoctorBName, DoctorBSurname), patient(PatientName, PatientSurname)), !.
 
 menu_pt(7):-nl, write('Adding patients and doctors...'), nl,
-    add_doctors_patients,
+    add_test_doctors_patients,
     write('Done!'), !.
 
 menu_pt(_):-write('No such menu item, dumbass!'), nl, !.
