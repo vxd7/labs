@@ -9,6 +9,13 @@ add_patient(patient(PatientName, PatientSurname), doctor(DoctorName, DoctorSurna
 add_doctor(doctor(DoctorName, DoctorSurname)):-
     assert(doctor(DoctorName, DoctorSurname)).
 
+remove_patient(Patient):-
+    retractall(treats(Patient, _, _, _)),
+    retract(Patient).
+remove_doctor(Doctor):-
+    retractall(treats(_, Doctor, _, _)),
+    retract(Doctor).
+
 % Counters
 set_counter(Name, Start) :- 
     retractall(counter(Name, _)),
@@ -72,6 +79,39 @@ out_patients_of_doctor_A_with_same_diagnosis_as_patients_of_doctor_B(doctor(Doct
         write(patient(NewPatientName, NewPatientSurname)), nl, fail.
 out_patients_of_doctor_A_with_same_diagnosis_as_patients_of_doctor_B(_).
 
+% TASKS
+% TASK1 -------------------------------
+max_patients_of_doctor(doctor(DoctorName, DoctorSurname), Count):-
+    doctor(DoctorName, DoctorSurname),
+    count_patients_of_doctor_with_diagnosis(doctor(DoctorName, DoctorSurname), _, Count),
+    not((doctor(NewDoctorName, NewDoctorSurname), count_patients_of_doctor_with_diagnosis(doctor(NewDoctorName, NewDoctorSurname), _, Count1), Count < Count1)).
+
+out_doctors_max_patients:-
+    max_patients_of_doctor(_, Count), !, write(Count), nl, 
+    out_doctors_treats_num_patients_with_diagnosis(Count, _).
+
+% TASK2 ------------------------------
+count_patient_diagnoses(patient(PatientName, PatientSurname), _):-
+    patient(PatientName, PatientSurname),
+    set_counter(patient_diagnoses, 0),
+    treats(_, patient(PatientName, PatientSurname), _, _),
+    inc_counter(patient_diagnoses, 1), fail.
+count_patient_diagnoses(_, Counter):-
+    reset_counter(patient_diagnoses, Counter).
+
+max_diagnoses_of_patient(patient(PatientName, PatientSurname), Count):-
+    patient(PatientName, PatientSurname),
+    count_patient_diagnoses(patient(PatientName, PatientSurname), Count),
+    not((patient(NewPatientName, NewPatientSurname), count_patient_diagnoses(patient(NewPatientName, NewPatientSurname), Count1), Count < Count1)).
+
+out_patients_max_diagnoses:-
+    max_diagnoses_of_patient(_, Count), !, write(Count), nl,
+    patient(PatientName, PatientSurname),
+    count_patient_diagnoses(patient(PatientName, PatientSurname), Counter1),
+    (Count == Counter1, write(patient(PatientName, PatientSurname)), nl), fail.
+
+
+
 add_doctors_patients:-
     add_doctor(doctor('Ivan', 'Ivanov')),
     add_doctor(doctor('Ivan111', 'Ivanov')),
@@ -96,6 +136,7 @@ add_test_doctors_patients:-
     add_doctor(doctor('Doctor4Name', 'Doctor4Surname')),
     add_doctor(doctor('Doctor5Name', 'Doctor5Surname')),
     add_doctor(doctor('Doctor6Name', 'Doctor6Surname')),
+    add_doctor(doctor('Doctor8Name', 'Doctor8Surname')),
 
     add_patient(patient('Patient1Name', 'Patient1Surname'), doctor('Doctor1Name', 'Doctor1Surname'), symptom1, diagnos1),   %
     add_patient(patient('Patient2Name', 'Patient2Surname'), doctor('Doctor1Name', 'Doctor1Surname'), symptom2, diagnos2),   % Patients of Doctor1
@@ -113,7 +154,11 @@ add_test_doctors_patients:-
 
     add_patient(patient('Patient11Name', 'Patient11Surname'), doctor('Doctor5Name', 'Doctor5Surname'), symptom31, diagnos5),%
     add_patient(patient('Patient12Name', 'Patient12Surname'), doctor('Doctor5Name', 'Doctor5Surname'), symptom32, diagnos4),% Patients of doctor5 have same diagnosis as
-    add_patient(patient('Patient13Name', 'Patient13Surname'), doctor('Doctor4Name', 'Doctor4Surname'), symptom33, diagnos4).% patients of doctor4
+    add_patient(patient('Patient13Name', 'Patient13Surname'), doctor('Doctor6Name', 'Doctor6Surname'), symptom33, diagnos4),% patients of doctor6
+
+    add_patient(patient('PatientDName', 'PatientDSurname'), doctor('Doctor6Name', 'Doctor6Surname'), symptom33, diagnos9),
+    add_patient(patient('PatientDName', 'PatientDSurname'), doctor('Doctor2Name', 'Doctor2Surname'), symptom33, diagnos0),
+    add_patient(patient('PatientDName', 'PatientDSurname'), doctor('Doctor8Name', 'Doctor8Surname'), symptom33, diagnos01).
 
 % Menu
 menu:-
@@ -126,6 +171,10 @@ menu:-
     write('5. Получить список пациентов, имеющих те же симптомы болезни, что и у заданного пациента'), nl,
     write('6. Для заданного доктора «А» получить список его пациентов, имеющих тот же диагноз, что и выбранный пациент, лечащийся у доктора «В»'), nl,
     write('7. Добавить примерный список докторов и пациентов для тестинга'), nl,
+    write('8. Delete patient'), nl,
+    write('9. Delete doctor'), nl,
+    write('10. Doctors who treat max number of patients'), nl,
+    write('11. Patients with max number of diagnoses'), nl,
     write('0. Exit'), nl, nl,
     write('Input the menu item number'), nl,
     read(X),
@@ -171,4 +220,16 @@ menu_pt(7):-nl, write('Adding patients and doctors...'), nl,
     add_test_doctors_patients,
     write('Done!'), !.
 
+menu_pt(8):-nl, write('Input patient'), nl,
+    read(Patient),
+    remove_patient(Patient), !.
+menu_pt(9):-nl, write('Input doctor'), nl,
+    read(Doctor),
+    remove_doctor(Doctor), !.
+
+menu_pt(10):-nl,
+    out_doctors_max_patients, !.
+
+menu_pt(11):-nl,
+    out_patients_max_diagnoses, !.
 menu_pt(_):-write('No such menu item, dumbass!'), nl, !.
